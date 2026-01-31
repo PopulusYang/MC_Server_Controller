@@ -1,4 +1,4 @@
-# Minecraft Web Controller
+# Minecraft Server Controller
 
 一个轻量级 Minecraft 服务器网页管理面板。它允许你直接通过浏览器远程管理服务器状态、查看实时日志、管理玩家和配置游戏规则。
 
