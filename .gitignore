@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Logs
+logs/
+*.log
+server_history.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Minecraft Server related (optional, if you want to keep source separate)
+# world/
+# banned-ips.json
+# banned-players.json
+# ops.json
+# whitelist.json
+# usercache.json
+# server.properties

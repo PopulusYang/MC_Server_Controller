@@ -1,0 +1,428 @@
+:root {
+    --bg-dark: #1e1e1e;
+    --bg-panel: #252526;
+    --bg-header: #2d2d2d;
+    --border: #333;
+    --primary: #007ACC;
+    --text-main: #fff;
+    --text-dim: #aaa;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Navbar */
+.navbar {
+    height: 48px;
+    background-color: var(--primary);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.version-badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: normal;
+    color: #eee;
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr 260px;
+    grid-template-rows: auto 1fr; /* Top row auto height, bottom fills */
+    gap: 15px;
+    padding: 15px;
+    overflow: hidden; 
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 260px 1fr;
+        grid-template-rows: auto 1fr;
+    }
+    .card-players {
+        display: none; /* Hide players sidebar on medium screens or move it? */
+    }
+}
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 500px auto;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    body { overflow: auto; }
+}
+
+/* Cards */
+.dashboard-card {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 10px 15px;
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 13px;
+    color: #ddd;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-content {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Card Positioning */
+.card-status { grid-column: 1 / 2; grid-row: 1 / 2; }
+.card-tools { grid-column: 1 / 2; grid-row: 2 / 3; }
+.card-console { grid-column: 2 / 3; grid-row: 1 / 3; }
+.card-players { grid-column: 3 / 4; grid-row: 1 / 3; }
+
+
+/* Specific Styles */
+/* Console */
+#console-container {
+    flex: 1;
+    background-color: #000;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    padding: 10px;
+    overflow-y: auto;
+    color: #ddd;
+}
+.input-area {
+    background-color: var(--bg-panel);
+    padding: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+}
+#cmd-input {
+    flex: 1;
+    padding: 8px;
+    background: #333;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+#btn-send {
+    padding: 8px 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Status & Controls */
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #ccc;
+}
+.progress-bar {
+    height: 4px;
+    background: #444;
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: width 0.5s;
+}
+
+.control-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+.btn-start { background-color: #4CAF50; }
+.btn-start:hover { background-color: #43A047; }
+.btn-stop { background-color: #f44336; }
+.btn-stop:hover { background-color: #E53935; } 
+.control-btn:disabled { 
+    opacity: 0.3; 
+    cursor: not-allowed; 
+    filter: grayscale(1); 
+    background-color: #555 !important;
+}
+
+/* Tools Menu */
+.menu-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+}
+.menu-btn:hover { background-color: #444; }
+
+/* Players */
+.sidebar-tabs { display: flex; border-bottom: 1px solid #333; }
+.sidebar-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; }
+.sidebar-tab.active { color: #fff; border-bottom-color: var(--primary); font-weight: bold; background: #2d2d2d; }
+
+/* Console Tabs */
+.console-tabs {
+    padding: 0;
+    display: flex;
+    border-bottom: 1px solid #333;
+}
+.console-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    color: #888;
+    border-bottom: 2px solid transparent;
+    font-size: 14px;
+}
+.console-tab.active {
+    color: #fff;
+    border-bottom-color: var(--primary);
+    font-weight: bold;
+    background: #2d2d2d;
+}
+
+.list-container { display: none; }
+.list-container.active { display: block; }
+
+#player-list, #all-player-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#player-list li, #all-player-list li {
+    padding: 8px 10px;
+    border-bottom: 1px solid #333;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#player-list li {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#player-list li:hover {
+    background: #333;
+}
+
+#player-list li::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+#all-player-list li::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #555;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.player-actions {
+    display: flex;
+    gap: 5px;
+    margin-left: 5px;
+}
+
+.player-actions button {
+    padding: 2px 6px;
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #ccc;
+    border-radius: 3px;
+}
+.player-actions button:hover {
+    background-color: #444;
+    color: #fff;
+}
+.btn-kick:hover { background-color: #d32f2f !important; border-color: #d32f2f !important; }
+.btn-ban:hover { background-color: #d32f2f !important; border-color: #d32f2f !important; }
+.btn-pardon:hover { background-color: #388e3c !important; border-color: #388e3c !important; }
+
+/* Overlays & Modals */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background: var(--bg-panel);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    position: relative;
+}
+.modal-close {
+    position: absolute; top: 10px; right: 15px;
+    font-size: 20px; cursor: pointer; color: #888;
+}
+.modal-close:hover { color: #fff; }
+
+.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+.status-running { background-color: #4CAF50; color: white; }
+.status-stopped { background-color: #555; color: #ccc; }
+
+.log-line { margin-bottom: 2px; }
+.warn { color: #fe0; }
+.error { color: #f55; }
+
+/* Feature List & Slider */
+.features-list { max-height: 400px; overflow-y: auto; }
+.feature-item { border-bottom: 1px solid #444; padding: 10px 0; }
+.switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #4CAF50; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* Login */
+#login-overlay { 
+    position: fixed; 
+    top: 0;
+    left: 0;
+    z-index: 9000; 
+    background: linear-gradient(135deg, #1e1e1e 0%, #0f0f0f 100%);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    width:100%; 
+    height:100%; 
+}
+
+#login-box { 
+    text-align: center; 
+    background: rgba(37, 37, 38, 0.9);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    width: 300px;
+}
+
+#login-input { 
+    padding: 12px; 
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px; 
+    background: rgba(0,0,0,0.3); 
+    border: 1px solid #444; 
+    color: white; 
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+#login-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+#btn-login {
+    padding: 12px 20px;
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.3s, transform 0.1s;
+}
+
+#btn-login:hover {
+    background: #0063a5;
+}
+
+#btn-login:active {
+    transform: scale(0.98);
+}

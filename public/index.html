@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Server 控制台</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- 登录界面 -->
+    <div id="login-overlay">
+        <div id="login-box">
+            <h2 style="margin-top: 0;">Server Access</h2>
+            <input type="password" id="login-input" placeholder="Enter Password"
+                onkeydown="if(event.key==='Enter') doLogin()">
+            <br>
+            <button id="btn-login" onclick="doLogin()">Login</button>
+            <p id="login-msg" style="color: #f44336; margin-bottom: 0; display: none;">Wrong password!</p>
+        </div>
+    </div>
+
+    <!-- 游戏特性模态框 -->
+    <div id="features-overlay" class="modal-overlay" onclick="if(event.target===this) closeFeatures()">
+        <div class="modal-content" style="width: 400px;">
+            <span class="modal-close" onclick="closeFeatures()">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 10px;">游戏特性配置</h2>
+            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">更改设置需要重启服务器才能生效</p>
+            <div id="features-list" class="features-list">
+                <div style="text-align: center; padding: 20px;">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏规则模态框 -->
+    <div id="gamerules-overlay" class="modal-overlay" onclick="if(event.target===this) closeGameRules()">
+        <div class="modal-content" style="width: 450px;">
+            <span class="modal-close" onclick="closeGameRules()">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 10px;">游戏规则 (GameRules)</h2>
+            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">仅服务器运行时可用，即时生效</p>
+            <div id="gamerules-list" class="features-list">
+                <div style="text-align: center; padding: 20px;">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 玩家管理模态框 -->
+    <div id="player-manage-overlay" class="modal-overlay" onclick="if(event.target===this) closePlayerManage()">
+        <div class="modal-content" style="width: 500px; max-height: 80vh; display: flex; flex-direction: column;">
+            <span class="modal-close" onclick="closePlayerManage()">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 10px;">玩家管理</h2>
+            
+            <div style="padding-bottom: 10px; border-bottom: 1px solid #444; margin-bottom: 10px;">
+                <input type="text" id="pm-search" placeholder="搜索玩家..." 
+                    style="width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: white; border-radius: 4px;"
+                    onkeyup="renderPlayerManageList()">
+            </div>
+            
+            <div id="pm-list" class="features-list" style="flex: 1; overflow-y: auto;">
+                <!-- Player items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTD 编辑模态框 -->
+    <div id="motd-overlay" class="modal-overlay" onclick="if(event.target===this) closeMotdEditor()">
+        <div class="modal-content" style="width: 500px;">
+            <span class="modal-close" onclick="closeMotdEditor()">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 10px;">编辑 MOTD</h2>
+            <div class="motd-controls" style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;">
+                <!-- Color Codes -->
+                <button class="color-btn" style="background:#000; color:#fff" onclick="addMotdCode('§0')" title="黑色">0</button>
+                <button class="color-btn" style="background:#0000AA; color:#fff" onclick="addMotdCode('§1')" title="深蓝">1</button>
+                <button class="color-btn" style="background:#00AA00; color:#fff" onclick="addMotdCode('§2')" title="深绿">2</button>
+                <button class="color-btn" style="background:#00AAAA; color:#fff" onclick="addMotdCode('§3')" title="湖蓝">3</button>
+                <button class="color-btn" style="background:#AA0000; color:#fff" onclick="addMotdCode('§4')" title="深红">4</button>
+                <button class="color-btn" style="background:#AA00AA; color:#fff" onclick="addMotdCode('§5')" title="紫色">5</button>
+                <button class="color-btn" style="background:#FFAA00; color:#fff" onclick="addMotdCode('§6')" title="金色">6</button>
+                <button class="color-btn" style="background:#AAAAAA; color:#000" onclick="addMotdCode('§7')" title="灰色">7</button>
+                <button class="color-btn" style="background:#555555; color:#fff" onclick="addMotdCode('§8')" title="深灰">8</button>
+                <button class="color-btn" style="background:#5555FF; color:#fff" onclick="addMotdCode('§9')" title="蓝色">9</button>
+                <button class="color-btn" style="background:#55FF55; color:#000" onclick="addMotdCode('§a')" title="绿色">a</button>
+                <button class="color-btn" style="background:#55FFFF; color:#000" onclick="addMotdCode('§b')" title="天蓝">b</button>
+                <button class="color-btn" style="background:#FF5555; color:#fff" onclick="addMotdCode('§c')" title="红色">c</button>
+                <button class="color-btn" style="background:#FF55FF; color:#fff" onclick="addMotdCode('§d')" title="粉色">d</button>
+                <button class="color-btn" style="background:#FFFF55; color:#000" onclick="addMotdCode('§e')" title="黄色">e</button>
+                <button class="color-btn" style="background:#FFFFFF; color:#000" onclick="addMotdCode('§f')" title="白色">f</button>
+            </div>
+            <div class="motd-controls" style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;">
+                 <!-- Formatting Codes -->
+                <button class="style-btn" onclick="addMotdCode('§k')">随机(k)</button>
+                <button class="style-btn" style="font-weight:bold" onclick="addMotdCode('§l')">加粗(l)</button>
+                <button class="style-btn" style="text-decoration:line-through" onclick="addMotdCode('§m')">删除(m)</button>
+                <button class="style-btn" style="text-decoration:underline" onclick="addMotdCode('§n')">下划(n)</button>
+                <button class="style-btn" style="font-style:italic" onclick="addMotdCode('§o')">斜体(o)</button>
+                <button class="style-btn" onclick="addMotdCode('§r')">重置(r)</button>
+            </div>
+            <textarea id="motd-input" rows="4" style="width: 100%; box-sizing: border-box; background: #333; color: white; border: 1px solid #555; padding: 10px; margin-bottom: 15px; font-family: monospace;"></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="menu-btn" style="background-color: #4CAF50; border-color: #4CAF50;" onclick="saveMotd()">保存</button>
+                <button class="menu-btn" style="background-color: #f44336; border-color: #f44336;" onclick="closeMotdEditor()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mod 管理模态框 -->
+    <div id="mods-overlay" class="modal-overlay" onclick="if(event.target===this) closeMods()">
+        <div class="modal-content" style="width: 550px; max-height: 80vh; display: flex; flex-direction: column;">
+            <span class="modal-close" onclick="closeMods()">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 10px;">模组管理 (Mods)</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <input type="file" id="mod-upload-input" accept=".jar" style="display:none" onchange="uploadMod(this)">
+                <button class="menu-btn" style="background:#4CAF50; margin:0; flex:1" onclick="document.getElementById('mod-upload-input').click()">📤 上传新模组 (.jar)</button>
+            </div>
+            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">更改模组状态、删除或添加模组均需重启服务器生效。</p>
+            <div id="mods-list" class="features-list" style="flex: 1; overflow-y: auto;">
+                <div style="text-align: center; padding: 20px;">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 资源包管理模态框 -->
+    <div id="rp-overlay" class="modal-overlay" onclick="if(event.target===this) closeResourcePacks()">
+        <div class="modal-content" style="width: 550px; max-height: 80vh; display: flex; flex-direction: column;">
+            <span class="modal-close" onclick="closeResourcePacks()">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 10px;">资源包管理 (Resource Packs)</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <input type="file" id="rp-upload-input" accept=".zip" style="display:none" onchange="uploadResourcePack(this)">
+                <button class="menu-btn" style="background:#4CAF50; margin:0; flex:1" onclick="document.getElementById('rp-upload-input').click()">📤 上传新资源包 (.zip)</button>
+            </div>
+            <div id="rp-list" class="features-list" style="flex: 1; overflow-y: auto;">
+                <div style="text-align: center; padding: 20px;">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>MC Server Controller</span>
+            <span id="version-badge" class="version-badge">Detecting...</span>
+            <span id="status-badge" class="status-badge status-stopped">Stopped</span>
+        </div>
+        <div></div>
+    </nav>
+
+    <!-- DASHBOARD GRID -->
+    <div class="dashboard-grid">
+        
+        <!-- CARD: STATUS -->
+        <div class="dashboard-card card-status">
+            <div class="card-header">服务器状态</div>
+            <div class="card-content" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <div class="stats-row"><span>CPU</span> <span id="val-cpu">--</span>%</div>
+                        <div class="progress-bar"><div id="cpu-bar" class="progress-fill" style="width: 0%"></div></div>
+                    </div>
+                    <div>
+                        <div class="stats-row"><span>RAM</span> <span><span id="val-mem">--</span>G</span></div>
+                        <div class="progress-bar"><div id="mem-bar" class="progress-fill" style="width: 0%; background: #9c27b0;"></div></div>
+                    </div>
+                 </div>
+                 <div class="stats-row" style="margin-top:5px; font-size: 11px;">
+                    <span>NET ↓ <span id="val-rx">0</span> KB/s</span>
+                    <span>NET ↑ <span id="val-tx">0</span> KB/s</span>
+                 </div>
+                 <div style="flex: 1; min-height: 150px; margin-top: 5px;">
+                    <canvas id="statusChart"></canvas>
+                 </div>
+                 <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button id="btn-start" class="control-btn btn-start" style="flex:1; margin-bottom:0;" onclick="startServer()">启动</button>
+                    <button id="btn-stop" class="control-btn btn-stop" style="flex:1; margin-bottom:0;" onclick="stopServer()" disabled>停止</button>
+                 </div>
+            </div>
+        </div>
+
+        <!-- CARD: TOOLS -->
+        <div class="dashboard-card card-tools">
+            <div class="card-header">快捷工具</div>
+            <div class="card-content" style="padding: 15px;">
+                <button class="menu-btn" onclick="openFeatures()">⚙️ 游戏特性配置</button>
+                <button class="menu-btn" onclick="openGameRules()">📜 游戏规则管理</button>
+                <button class="menu-btn" onclick="openPlayerManage()">👥 玩家高级管理</button>
+                <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                    <button class="menu-btn" style="background: #3e3e4e; border-color: #4e4e5e;" onclick="openMods()">🧩 模组管理 (Mods)</button>
+                    <button class="menu-btn" style="background: #3e4e3e; border-color: #4e5e4e;" onclick="backupWorld()">📦 立即备份世界</button>
+                    <button class="menu-btn" style="background: #4e3e6e; border-color: #5e4e7e;" onclick="openResourcePacks()">🎨 资源包管理</button>
+                    <button class="menu-btn" style="background: #6d4c41; border-color: #5d4037;" onclick="document.getElementById('icon-upload').click()">🖼️ 更改服务器图标</button>
+                    <input type="file" id="icon-upload" accept="image/*" style="display:none" onchange="handleIconUpload(this)">
+                    <button class="menu-btn" style="background: #4e3e3e; border-color: #5e4e4e;" onclick="cleanItems()">🧹 清理掉落物</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD: CONSOLE -->
+        <div class="dashboard-card card-console">
+            <div class="card-header console-tabs">
+                <div id="tab-log" class="console-tab active" onclick="switchConsoleTab('log')">控制台日志</div>
+                <div id="tab-chat" class="console-tab" onclick="switchConsoleTab('chat')">聊天室</div>
+            </div>
+            <div class="card-content" style="display:flex; flex-direction:column;">
+                <div id="console-container"></div>
+                <div id="chat-container" style="display:none; flex-grow:1; background:#000; border-radius:4px; margin-bottom:10px; padding:10px; font-family:'Courier New', monospace; overflow-y:auto; font-size:13px; color:#ddd;"></div>
+                <div class="input-area">
+                    <input type="text" id="cmd-input" placeholder="输入命令..." onkeydown="handleEnter(event)">
+                    <button id="btn-send" onclick="sendCommand()">发送</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD: PLAYERS -->
+        <div class="dashboard-card card-players">
+            <div class="card-header">
+                在线玩家
+                <span id="player-count" style="background:#444; padding:2px 6px; border-radius:10px; font-size:12px;">0</span>
+            </div>
+            <div class="card-content" style="display:flex; flex-direction:column;">
+                <div class="sidebar-tabs">
+                    <div id="tab-online" class="sidebar-tab active" onclick="switchTab('online')">在线</div>
+                    <div id="tab-all" class="sidebar-tab" onclick="switchTab('all')">历史</div>
+                </div>
+                <div class="sidebar-content">
+                    <div id="view-online" class="list-container active">
+                        <ul id="player-list"></ul>
+                    </div>
+                    <div id="view-all" class="list-container">
+                        <ul id="all-player-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
