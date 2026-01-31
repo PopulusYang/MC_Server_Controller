@@ -66,18 +66,262 @@ body {
         grid-template-rows: auto 1fr;
     }
     .card-players {
-        display: none; /* Hide players sidebar on medium screens or move it? */
+        display: none;
     }
 }
+
 @media (max-width: 900px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto 500px auto;
+        grid-template-rows: auto;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
     }
     body { overflow: auto; }
+    
+    .card-status, .card-tools, .card-console, .card-players {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    /* 默认列表状态下隐藏性能图表，省出纵向空间 */
+    .card-status:not(.expanded) #statusChart,
+    .card-status:not(.expanded) .card-content > div:nth-child(3) {
+        display: none !important;
+    }
+
+    /* 优化缩略状态下的占比情况 */
+    .card-status:not(.expanded) .card-content {
+        gap: 8px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .card-status.expanded #statusChart,
+    .card-status.expanded .card-content > div:nth-child(3) {
+        display: block !important;
+        min-height: 200px !important;
+    }
+
+    .dashboard-card.expanded {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 5000 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background-color: var(--bg-panel) !important;
+    }
+    
+    .dashboard-card.expanded .card-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        padding: 15px !important;
+        display: block !important; /* 改回 block 以允许自然垂直排列和滑动 */
+    }
+
+    /* 控制台放大时的特殊处理 */
+    .dashboard-card.expanded.card-console .card-content {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .dashboard-card.expanded #console-container {
+        flex: 1 !important;
+        height: auto !important; 
+        min-height: 300px;
+    }
+
+    .dashboard-card.expanded #chat-container {
+        flex: 1 !important;
+        height: auto !important;
+    }
+
+    .expand-icon {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        cursor: pointer;
+        margin-left: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+        display: inline-block;
+    }
+}
+
+/* 默认隐藏放大按钮（电脑模式） */
+.expand-icon {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        padding: 5px;
+        gap: 8px;
+    }
+    
+    .navbar {
+        padding: 0 10px;
+        height: 52px;
+    }
+    
+    .navbar-brand {
+        font-size: 14px;
+        gap: 8px;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .navbar-brand span:first-child {
+        display: none;
+    }
+    .navbar-brand::before {
+        content: "MC Panel";
+        font-weight: 600;
+    }
+    
+    .version-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .dashboard-card {
+        border-radius: 4px;
+    }
+
+    .card-header {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .card-content {
+        padding: 10px !important;
+    }
+
+    .menu-btn {
+        padding: 10px;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    /* Modal responsiveness */
+    .modal-content {
+        width: 95% !important;
+        max-width: none !important;
+        padding: 15px;
+        margin: 0;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .features-list {
+        max-height: none;
+    }
+
+    /* Reduce chart height on mobile */
+    .card-status .card-content > div:nth-child(3) {
+        min-height: 120px !important;
+    }
+    
+    #statusChart {
+        height: 120px !important;
+    }
+
+    /* Console height on mobile - 使其成为页面的主要内容 */
+    .card-console:not(.expanded) {
+        min-height: 400px;
+    }
+    
+    .card-console:not(.expanded) #console-container {
+        height: 320px;
+    }
+
+    /* 玩家列表在缩略模式下不要占太长空间 */
+    .card-players:not(.expanded) {
+        max-height: 300px;
+    }
+
+    #cmd-input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    /* Mobile specific adjustments for player list */
+    .player-actions button {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+    
+    .console-tab {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .feature-item {
+        padding: 8px 5px;
+        font-size: 13px;
+    }
+
+    .feature-item > div {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 5px;
+    }
+    
+    .feature-item .switch {
+        align-self: flex-end;
+    }
+
+    /* Hide some less critical tools if needed, but let's keep them accessible for now */
+    /* Or make them a 2-column grid on mobile */
+    .card-tools .card-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        padding: 8px !important;
+    }
+    .card-tools .menu-btn {
+        margin-bottom: 0;
+        text-align: center;
+        padding: 8px 4px;
+        font-size: 11px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #2a2a2b;
+        border-color: #3a3a3b;
+        min-height: 45px;
+    }
+    .card-tools .card-content > div {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        border-top: 1px solid #333;
+        margin-top: 6px !important;
+        padding-top: 6px !important;
+    }
+
+    /* 缩小控制按钮及间距 */
+    .control-btn {
+        padding: 8px !important;
+        font-size: 13px !important;
+    }
+    
+    .card-status .card-content > div:last-child {
+        margin-top: 0 !important;
+    }
 }
 
 /* Cards */
@@ -337,6 +581,8 @@ body {
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     position: relative;
+    width: 90%;
+    max-width: 500px;
 }
 .modal-close {
     position: absolute; top: 10px; right: 15px;
@@ -348,7 +594,12 @@ body {
 .status-running { background-color: #4CAF50; color: white; }
 .status-stopped { background-color: #555; color: #ccc; }
 
-.log-line { margin-bottom: 2px; }
+.log-line { 
+    margin-bottom: 2px; 
+    white-space: pre-wrap; 
+    word-break: break-all;
+    line-height: 1.4;
+}
 .warn { color: #fe0; }
 .error { color: #f55; }
 
@@ -385,7 +636,8 @@ input:checked + .slider:before { transform: translateX(20px); }
     box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.05);
     backdrop-filter: blur(10px);
-    width: 300px;
+    width: 90%;
+    max-width: 350px;
 }
 
 #login-input { 

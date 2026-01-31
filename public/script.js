@@ -132,7 +132,59 @@ function initChart() {
     });
 }
 
-window.addEventListener('load', initChart);
+window.addEventListener('load', () => {
+    initChart();
+    initMobileExpansion();
+});
+
+function initMobileExpansion() {
+    const cards = document.querySelectorAll('.dashboard-card');
+    cards.forEach(card => {
+        const header = card.querySelector('.card-header');
+        if (!header) return;
+
+        // 添加一个小图标提示可以点击
+        const icon = document.createElement('span');
+        icon.className = 'expand-icon';
+        icon.textContent = '⛶ 放大';
+        header.appendChild(icon);
+
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', (e) => {
+            // 如果点击的是控制台标签或按钮，不触发放大
+            if (e.target.classList.contains('console-tab') || e.target.tagName === 'BUTTON') return;
+            
+            if (window.innerWidth > 900) return; // 仅在移动端生效
+
+            toggleCardExpand(card, icon);
+        });
+
+        // 针对快捷工具内的按钮，点击后自动收起全屏
+        const buttons = card.querySelectorAll('.card-content button');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (card.classList.contains('expanded')) {
+                    toggleCardExpand(card, icon);
+                }
+            });
+        });
+    });
+}
+
+function toggleCardExpand(card, icon) {
+    const isExpanded = card.classList.toggle('expanded');
+    if (isExpanded) {
+        icon.textContent = '✕ 缩小';
+        document.body.style.overflow = 'hidden';
+        // 确保放大时图表能自适应
+        if (statusChart && card.contains(document.getElementById('statusChart'))) {
+            setTimeout(() => statusChart.resize(), 300);
+        }
+    } else {
+        icon.textContent = '⛶ 放大';
+        document.body.style.overflow = '';
+    }
+}
 
 function openFeatures() {
     document.getElementById('features-overlay').style.display = 'flex';
